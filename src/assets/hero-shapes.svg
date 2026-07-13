@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700" fill="none">
+  <!-- Green tall pill (top-left) -->
+  <path d="M40 40 h160 a80 80 0 0 1 80 80 v120 h-240 Z" fill="#0BB63B"/>
+  <!-- Navy quarter (bottom of tall green area, right side) -->
+  <path d="M300 40 h160 v160 a80 80 0 0 1 -80 80 h-80 Z" fill="#0000BF"/>
+  <!-- Small light blue chip top-right -->
+  <path d="M480 40 h80 a20 20 0 0 1 20 20 v140 h-100 Z" fill="#8FDAF7"/>
+
+  <!-- Row 2 -->
+  <!-- Navy block -->
+  <path d="M40 300 h240 v160 a80 80 0 0 1 -80 80 h-160 Z" fill="#0000BF"/>
+  <!-- Electric blue block -->
+  <path d="M300 300 h160 a80 80 0 0 1 80 80 v160 h-240 Z" fill="#0528F2"/>
+  <!-- Cyan block right -->
+  <path d="M480 300 h100 v240 h-100 Z" fill="#45C2F2"/>
+
+  <!-- Row 3 -->
+  <!-- Sky bottom left -->
+  <path d="M40 560 h240 v100 a20 20 0 0 1 -20 20 h-200 a20 20 0 0 1 -20 -20 Z" fill="#8FDAF7"/>
+  <!-- Green bottom middle -->
+  <path d="M300 560 h240 v100 a20 20 0 0 1 -20 20 h-200 a20 20 0 0 1 -20 -20 Z" fill="#0BB63B"/>
+</svg>

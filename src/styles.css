@@ -1,0 +1,128 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-navy: var(--navy);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-green: var(--brand-green);
+  --color-sky: var(--sky);
+  --color-sand: var(--sand);
+
+  --font-display: "Barlow Condensed", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+:root {
+  --radius: 0.75rem;
+
+  /* Brand palette (from live wilenconsulting.com logo) */
+  --navy: oklch(0.24 0.19 265);        /* deep navy #000A87-ish */
+  --brand-blue: oklch(0.48 0.28 265);  /* electric blue #0033ff */
+  --brand-green: oklch(0.68 0.22 145); /* vivid green #00b800 */
+  --sky: oklch(0.82 0.10 235);         /* light sky blue */
+  --sand: oklch(0.98 0.008 95);        /* warm off-white */
+
+  --background: oklch(0.995 0.003 95);
+  --foreground: oklch(0.18 0.09 265);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--foreground);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--foreground);
+  --primary: var(--navy);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.96 0.02 250);
+  --secondary-foreground: var(--navy);
+  --muted: oklch(0.96 0.008 250);
+  --muted-foreground: oklch(0.48 0.03 260);
+  --accent: var(--brand-green);
+  --accent-foreground: oklch(0.99 0 0);
+  --destructive: oklch(0.6 0.24 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.92 0.02 255);
+  --input: oklch(0.92 0.02 255);
+  --ring: var(--brand-blue);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--navy);
+  }
+}
+
+/* Signature underline accent (green swoosh under headings) */
+@utility accent-underline {
+  position: relative;
+  display: inline-block;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.15em;
+    height: 0.35em;
+    background: var(--brand-green);
+    opacity: 0.35;
+    border-radius: 999px;
+    z-index: -1;
+  }
+}
+
+@utility eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brand-blue);
+}
+
+@utility tile-bg {
+  background-image:
+    radial-gradient(circle at 20% 20%, color-mix(in oklab, var(--brand-green) 18%, transparent) 0, transparent 45%),
+    radial-gradient(circle at 80% 30%, color-mix(in oklab, var(--brand-blue) 22%, transparent) 0, transparent 50%),
+    radial-gradient(circle at 60% 90%, color-mix(in oklab, var(--sky) 30%, transparent) 0, transparent 55%);
+}
