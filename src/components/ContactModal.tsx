@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { submitContactForm } from "@/lib/contact-form";
 
 type Ctx = { open: (subject?: string) => void; close: () => void };
 
@@ -14,10 +15,13 @@ export function ContactModalProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [subject, setSubject] = useState<string | undefined>(undefined);
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const open = useCallback((s?: string) => {
     setSubject(s);
     setSent(false);
+    setError(null);
     setIsOpen(true);
   }, []);
   const close = useCallback(() => setIsOpen(false), []);
@@ -88,15 +92,32 @@ export function ContactModalProvider({ children }: { children: ReactNode }) {
                 </div>
               ) : (
                 <form
-                  onSubmit={(e) => {
+                  onSubmit={async (e) => {
                     e.preventDefault();
-                    setSent(true);
+                    setError(null);
+                    setSending(true);
+                    const data = new FormData(e.currentTarget);
+                    try {
+                      await submitContactForm({
+                        name: String(data.get("name") ?? ""),
+                        email: String(data.get("email") ?? ""),
+                        company: String(data.get("company") ?? ""),
+                        message: String(data.get("message") ?? ""),
+                        subject,
+                      });
+                      setSent(true);
+                    } catch (err) {
+                      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+                    } finally {
+                      setSending(false);
+                    }
                   }}
                 >
                   <div className="grid gap-4 sm:grid-cols-2">
                     <label className="block">
                       <span className="text-xs uppercase tracking-wider text-muted-foreground">Name</span>
                       <input
+                        name="name"
                         required
                         className="mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-brand-blue"
                         placeholder="Your name"
@@ -105,6 +126,7 @@ export function ContactModalProvider({ children }: { children: ReactNode }) {
                     <label className="block">
                       <span className="text-xs uppercase tracking-wider text-muted-foreground">Email</span>
                       <input
+                        name="email"
                         required
                         type="email"
                         className="mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-brand-blue"
@@ -115,6 +137,7 @@ export function ContactModalProvider({ children }: { children: ReactNode }) {
                   <label className="mt-4 block">
                     <span className="text-xs uppercase tracking-wider text-muted-foreground">Company (optional)</span>
                     <input
+                      name="company"
                       className="mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-brand-blue"
                       placeholder="Company name"
                     />
@@ -124,6 +147,7 @@ export function ContactModalProvider({ children }: { children: ReactNode }) {
                       What's the problem you're trying to solve?
                     </span>
                     <textarea
+                      name="message"
                       required
                       rows={5}
                       defaultValue={subject ? `I'm interested in: ${subject}\n\n` : ""}
@@ -131,13 +155,15 @@ export function ContactModalProvider({ children }: { children: ReactNode }) {
                       placeholder="Tell us a little about the workflow that's causing pain."
                     />
                   </label>
+                  {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
                   <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
                     <p className="text-xs text-muted-foreground">We reply within one business day.</p>
                     <button
                       type="submit"
-                      className="inline-flex items-center gap-2 rounded-full bg-brand-green px-6 py-3 text-sm font-semibold text-white shadow-md shadow-brand-green/25 transition hover:brightness-95"
+                      disabled={sending}
+                      className="inline-flex items-center gap-2 rounded-full bg-brand-green px-6 py-3 text-sm font-semibold text-white shadow-md shadow-brand-green/25 transition hover:brightness-95 disabled:opacity-70"
                     >
-                      Send message
+                      {sending ? "Sending…" : "Send message"}
                       <span aria-hidden>→</span>
                     </button>
                   </div>

@@ -12,4 +12,9 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Prerender every route to plain static HTML/CSS/JS (output: .output/public) so the
+  // site can be uploaded via FTP to shared hosting — no Node server required.
+  nitro: {
+    preset: "static",
+  },
 });

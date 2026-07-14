@@ -1,4 +1,11 @@
+import { useState } from "react";
+import { submitContactForm } from "@/lib/contact-form";
+
 export function ContactSection({ compact = false }: { compact?: boolean }) {
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   return (
     <section id="contact" className="bg-sand">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-16 sm:px-6 md:py-20 lg:grid-cols-5 lg:gap-12">
@@ -32,42 +39,79 @@ export function ContactSection({ compact = false }: { compact?: boolean }) {
 
         <form
           className="rounded-2xl border border-border bg-white p-6 shadow-sm sm:p-8 lg:col-span-3"
-          onSubmit={(e) => e.preventDefault()}
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setError(null);
+            setSending(true);
+            const data = new FormData(e.currentTarget);
+            try {
+              await submitContactForm({
+                name: String(data.get("name") ?? ""),
+                email: String(data.get("email") ?? ""),
+                message: String(data.get("message") ?? ""),
+              });
+              setSent(true);
+              e.currentTarget.reset();
+            } catch (err) {
+              setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+            } finally {
+              setSending(false);
+            }
+          }}
         >
-          <div className="grid gap-5 md:grid-cols-2">
-            <label className="block">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground">Name</span>
-              <input
-                className="mt-2 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-brand-blue"
-                placeholder="Your name"
-              />
-            </label>
-            <label className="block">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground">Email</span>
-              <input
-                type="email"
-                className="mt-2 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-brand-blue"
-                placeholder="you@company.com"
-              />
-            </label>
-          </div>
-          <label className="mt-5 block">
-            <span className="text-xs uppercase tracking-wider text-muted-foreground">
-              What's the problem you're trying to solve?
-            </span>
-            <textarea
-              rows={5}
-              className="mt-2 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-brand-blue"
-              placeholder="Tell us a little about the workflow that's causing pain."
-            />
-          </label>
-          <button
-            type="submit"
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-green px-6 py-3.5 text-sm font-semibold text-white shadow-md shadow-brand-green/25 transition hover:brightness-95"
-          >
-            Send message
-            <span aria-hidden>→</span>
-          </button>
+          {sent ? (
+            <div className="py-8 text-center">
+              <p className="font-display text-2xl text-navy">Thank you!</p>
+              <p className="mt-2 text-sm text-foreground/70">
+                We got your message and will be in touch within one business day.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="grid gap-5 md:grid-cols-2">
+                <label className="block">
+                  <span className="text-xs uppercase tracking-wider text-muted-foreground">Name</span>
+                  <input
+                    name="name"
+                    required
+                    className="mt-2 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-brand-blue"
+                    placeholder="Your name"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-xs uppercase tracking-wider text-muted-foreground">Email</span>
+                  <input
+                    name="email"
+                    required
+                    type="email"
+                    className="mt-2 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-brand-blue"
+                    placeholder="you@company.com"
+                  />
+                </label>
+              </div>
+              <label className="mt-5 block">
+                <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                  What's the problem you're trying to solve?
+                </span>
+                <textarea
+                  name="message"
+                  required
+                  rows={5}
+                  className="mt-2 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-brand-blue"
+                  placeholder="Tell us a little about the workflow that's causing pain."
+                />
+              </label>
+              {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+              <button
+                type="submit"
+                disabled={sending}
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-green px-6 py-3.5 text-sm font-semibold text-white shadow-md shadow-brand-green/25 transition hover:brightness-95 disabled:opacity-70"
+              >
+                {sending ? "Sending…" : "Send message"}
+                <span aria-hidden>→</span>
+              </button>
+            </>
+          )}
         </form>
       </div>
     </section>
