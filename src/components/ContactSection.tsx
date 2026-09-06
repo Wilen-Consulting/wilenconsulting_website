@@ -1,10 +1,28 @@
-import { useState } from "react";
-import { submitContactForm } from "@/lib/contact-form";
+import { useState, type FormEvent } from "react";
+import { submitContactForm } from "@/lib/contact-endpoint";
 
 export function ContactSection({ compact = false }: { compact?: boolean }) {
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    setStatus("loading");
+    try {
+      await submitContactForm({
+        name: String(data.get("name") || ""),
+        email: String(data.get("email") || ""),
+        message: String(data.get("message") || ""),
+        source: "Contact section",
+      });
+      setStatus("success");
+      form.reset();
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
+    }
+  }
 
   return (
     <section id="contact" className="bg-sand">
@@ -38,28 +56,10 @@ export function ContactSection({ compact = false }: { compact?: boolean }) {
         </div>
 
         <form
+          onSubmit={handleSubmit}
           className="rounded-2xl border border-border bg-white p-6 shadow-sm sm:p-8 lg:col-span-3"
-          onSubmit={async (e) => {
-            e.preventDefault();
-            setError(null);
-            setSending(true);
-            const data = new FormData(e.currentTarget);
-            try {
-              await submitContactForm({
-                name: String(data.get("name") ?? ""),
-                email: String(data.get("email") ?? ""),
-                message: String(data.get("message") ?? ""),
-              });
-              setSent(true);
-              e.currentTarget.reset();
-            } catch (err) {
-              setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
-            } finally {
-              setSending(false);
-            }
-          }}
         >
-          {sent ? (
+          {status === "success" ? (
             <div className="py-8 text-center">
               <p className="font-display text-2xl text-navy">Thank you!</p>
               <p className="mt-2 text-sm text-foreground/70">
@@ -82,8 +82,8 @@ export function ContactSection({ compact = false }: { compact?: boolean }) {
                   <span className="text-xs uppercase tracking-wider text-muted-foreground">Email</span>
                   <input
                     name="email"
-                    required
                     type="email"
+                    required
                     className="mt-2 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-brand-blue"
                     placeholder="you@company.com"
                   />
@@ -98,16 +98,20 @@ export function ContactSection({ compact = false }: { compact?: boolean }) {
                   required
                   rows={5}
                   className="mt-2 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-brand-blue"
-                  placeholder="Tell us a little about the workflow that's causing pain."
+                  placeholder="Tell us what's going on. We'll figure out a fix."
                 />
               </label>
-              {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+              {status === "error" && (
+                <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-center text-xs text-red-700">
+                  Something went wrong sending your message. Please try again, or email us directly at aviva@wilenconsulting.com.
+                </p>
+              )}
               <button
                 type="submit"
-                disabled={sending}
-                className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-green px-6 py-3.5 text-sm font-semibold text-white shadow-md shadow-brand-green/25 transition hover:brightness-95 disabled:opacity-70"
+                disabled={status === "loading"}
+                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-green px-6 py-3.5 text-sm font-semibold text-white shadow-md shadow-brand-green/25 transition hover:brightness-95 disabled:opacity-70 sm:w-auto"
               >
-                {sending ? "Sending…" : "Send message"}
+                {status === "loading" ? "Sending…" : "Send message"}
                 <span aria-hidden>→</span>
               </button>
             </>

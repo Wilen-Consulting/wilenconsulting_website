@@ -46,6 +46,7 @@ import borensonImg from "@/assets/testimonials/borenson-alt.jpg";
 import ahuvaImg from "@/assets/testimonials/ahuva-alt.jpg";
 import dentalImg from "@/assets/testimonials/dental-wholesalers.jpg";
 import forscheimerImg from "@/assets/testimonials/forscheimer-alt.jpg";
+import judahImg from "@/assets/testimonials/judah-bergman.jpg.asset.json";
 import teethImg from "@/assets/case-studies/teeth.jpg";
 
 export type ServiceContent = {
@@ -98,21 +99,21 @@ export const services: Service[] = [
   {
     slug: "integrations",
     title: "Integrations",
-    body: "Connect the systems you already use so data moves automatically instead of getting re-typed by hand.",
+    body: "Connect the systems you already use so data moves automatically between them, without manual imports or brittle workarounds.",
     icon: integrationsIcon,
     heroImage: integrationsIcon,
     content: {
       problem: {
         title: "The Problem",
         paragraphs: [
-          "You have great tools. They just don't talk to each other. Data gets re-typed, exports get lost, and reports never quite match.",
+          "You have great tools. They just don't talk to each other. Teams end up relying on manual imports, or on an integration that doesn't handle all the cases they actually need.",
         ],
       },
       solution: {
         title: "The Solution",
         paragraphs: [
-          "We connect the systems you already own so information flows automatically between them.",
-          "No more copy-paste, no more mismatched numbers, no more manual reconciliation.",
+          "We connect the systems you already own so information flows automatically between them, covering the edge cases the out-of-the-box integration misses.",
+          "No more exports that don't match, no manual reconciliation, no gaps between systems.",
         ],
         image: sol02,
       },
@@ -342,25 +343,27 @@ export const industries: IndustryDetail[] = [
     slug: "medical-billing",
     title: "Medical Billing",
     tagline: "HIPAA-compliant medical billing, automated end to end.",
-    body: "Claims tracking, payment reconciliation, and paperwork, so your practice can focus on patients instead of chasing payers.",
+    body: "Claims tracking, payment reconciliation, and paperwork, built for medical billing companies handling volume across multiple practices.",
     image: medicalBillingImg,
     keyChallenges: [
+      "Submitting claims takes forever",
+      "Claims get denied because of user errors",
       "Denied claims sit in a spreadsheet no one owns",
       "Payments arrive without a clear match to the claim",
       "Compliance and audit paperwork consumes admin hours",
       "Reporting for owners and payers lives in five places",
     ],
     ourApproach: [
-      "Map every claim's lifecycle from submission to reconciliation",
-      "Automate payer submissions, denials, and follow-ups",
-      "Build HIPAA-compliant document workflows around your existing tools",
-      "Give leadership a single dashboard for revenue, aging, and denial reasons",
+      "Map every claim's lifecycle end to end with your billing team",
+      "Reduce user errors at the point of entry so fewer claims get denied",
+      "Give leadership one place to see revenue, aging, and denial reasons",
+      "Keep everything HIPAA-safe without adding steps for your staff",
     ],
     features: [
-      { title: "Claims tracking", body: "Every claim moves through a defined status with owner, aging, and next action visible at a glance." },
-      { title: "Payment reconciliation", body: "Match ERAs and payments to the right claim automatically, flag exceptions for review." },
-      { title: "HIPAA-safe documents", body: "Intake, consents, and PHI stored and shared with role-based access." },
-      { title: "Owner reporting", body: "Real-time revenue, denial-rate, and AR-aging reports without a manual export." },
+      { title: "Claims Tracking", body: "Every claim moves through a defined status with owner, aging, and next action visible at a glance." },
+      { title: "Payment Reconciliation", body: "Match ERAs and payments to the right claim automatically, flag exceptions for review." },
+      { title: "HIPAA-Safe Documents", body: "Intake, consents, and PHI stored and shared with role-based access." },
+      { title: "Owner Reporting", body: "Real-time revenue, denial-rate, and AR-aging reports without a manual export." },
     ],
     outcomes: [
       "Fewer claims lost in follow-up",
@@ -369,8 +372,9 @@ export const industries: IndustryDetail[] = [
     ],
   },
   {
-    slug: "retail-ecommerce",
-    title: "Retail / E-Commerce",
+    slug: "apparel",
+    title: "Apparel",
+
     tagline: "Storefront, back office, and warehouse, finally in sync.",
     body: "Accounting integrations, inventory reconciliation, and order processing built for how you actually sell online and in store.",
     image: retailImg,
@@ -378,7 +382,6 @@ export const industries: IndustryDetail[] = [
       "Storefront orders and accounting drift out of sync",
       "Inventory counts are wrong by the end of the week",
       "Refunds and adjustments require manual double-entry",
-      "New channels (marketplaces, POS) create yet another data silo",
     ],
     ourApproach: [
       "Integrate storefront, POS, accounting, and shipping into one flow",
@@ -387,10 +390,10 @@ export const industries: IndustryDetail[] = [
       "Add reporting your merchandiser and CFO both actually use",
     ],
     features: [
-      { title: "Order to cash", body: "Every online and in-store order lands in the books automatically." },
-      { title: "Inventory sync", body: "Stock updates from every channel keep counts accurate without spreadsheets." },
-      { title: "Refund automation", body: "Refunds, partial returns, and fees flow through to accounting without re-entry." },
-      { title: "Channel reporting", body: "See margin, sell-through, and stock health by SKU and channel in one view." },
+      { title: "Order to Cash", body: "Every online and in-store order lands in the books automatically." },
+      { title: "Inventory Sync", body: "Stock updates from every channel keep counts accurate without spreadsheets." },
+      { title: "Refund Automation", body: "Refunds, partial returns, and fees flow through to accounting without re-entry." },
+      { title: "Channel Reporting", body: "See margin, sell-through, and stock health by SKU and channel in one view." },
     ],
     outcomes: [
       "Books match the storefront every day",
@@ -401,8 +404,8 @@ export const industries: IndustryDetail[] = [
   {
     slug: "warehouse-management",
     title: "Warehouse Management",
-    tagline: "Software built for warehouse and logistics operations.",
-    body: "Keep stock, receiving, picks, and fulfillment in lock-step with a warehouse system designed around your floor, not a template.",
+    tagline: "Customized tools that simplify warehouse and logistics operations.",
+    body: "We tailor the tools you already use so stock, receiving, picks, and fulfillment stay in lock-step with how your floor actually runs.",
     image: warehouseImg,
     keyChallenges: [
       "Receiving, put-away, and picks live in different systems",
@@ -417,10 +420,10 @@ export const industries: IndustryDetail[] = [
       "Add exception alerts so ops catches problems before customers do",
     ],
     features: [
-      { title: "Guided receiving", body: "Scan-based receiving that puts stock in the right bin the first time." },
-      { title: "Wave picking", body: "Batch and prioritize picks by carrier cutoff, priority, and dock." },
-      { title: "Cycle count automation", body: "Rolling counts that keep the ERP and floor in agreement." },
-      { title: "Ops dashboards", body: "Backlog, on-time ship, and error rates visible in real time." },
+      { title: "Guided Receiving", body: "Scan-based receiving that puts stock in the right bin the first time." },
+      { title: "Wave Picking", body: "Batch and prioritize picks by carrier cutoff, priority, and dock." },
+      { title: "Cycle Count Automation", body: "Rolling counts that keep the ERP and floor in agreement." },
+      { title: "Ops Dashboards", body: "Backlog, on-time ship, and error rates visible in real time." },
     ],
     outcomes: [
       "Higher pick and pack accuracy",
@@ -447,10 +450,10 @@ export const industries: IndustryDetail[] = [
       "Build billing exports tailored to each payer's requirements",
     ],
     features: [
-      { title: "Auth and unit tracking", body: "Live view of remaining units against every authorization, per client." },
-      { title: "Session notes", body: "Structured, exportable session notes that stay in step with billing." },
+      { title: "Auth and Unit Tracking", body: "Live view of remaining units against every authorization, per client." },
+      { title: "Session Notes", body: "Structured, exportable session notes that stay in step with billing." },
       { title: "Scheduling", body: "Reschedules that update payroll, billing, and parent notifications in one action." },
-      { title: "Parent portal", body: "A private, compliant space for updates, consents, and scheduling requests." },
+      { title: "Parent Portal", body: "A private, compliant space for updates, consents, and scheduling requests." },
     ],
     outcomes: [
       "Fewer billing errors and denied units",
@@ -591,7 +594,7 @@ export const caseStudies: CaseStudy[] = [
   {
     slug: "dental-wholesalers",
     title: "Dental Wholesalers",
-    industry: "Retail / E-Commerce",
+    industry: "Apparel",
     summary: "Dental Wholesalers sell a few products with many variations, resulting in more than 600 types of each product.",
     body: "Dental Wholesalers sell a few products with many variations, resulting in more than 600 types of each product.",
     intro: "Dental Wholesalers sell a few products with many variations, resulting in more than 600 types of each product.",
@@ -745,8 +748,9 @@ export const testimonials: Testimonial[] = [
   {
     quote: "Wilen Consulting has been a game changer in our Netsuite experience.",
     body: "They have helped us maximize functionality, scope projects and understand processes in an educated way. They have created multiple scripts/workflows that have made our operations more efficient including setting up external integrations from scratch.",
-    name: "Yoel Gras",
+    name: "Judah Bergman",
     role: "Jool Baby",
+    image: judahImg.url,
   },
 ];
 

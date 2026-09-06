@@ -30,7 +30,7 @@ function ServicesIndex() {
             <span className="eyebrow">Custom Software</span>
             <h2 className="mt-3 text-2xl sm:text-3xl">Built around how you actually work.</h2>
             <p className="mt-3 text-foreground/70">
-              Three ways we build software that fits your business instead of forcing your business to fit the software.
+              We build software that fits your business instead of forcing your business to fit the software.
             </p>
           </div>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -41,11 +41,13 @@ function ServicesIndex() {
                 params={{ slug: s.slug }}
                 className="group flex flex-col rounded-2xl border border-border bg-white p-6 transition hover:-translate-y-1 hover:border-brand-blue/40 hover:shadow-xl"
               >
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary">
-                  <img src={s.icon} alt="" className="h-10 w-10 object-contain" />
+                <div className="flex items-center gap-4">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-secondary">
+                    <img src={s.icon} alt="" className="h-9 w-9 object-contain" />
+                  </div>
+                  <h3 className="text-xl leading-tight sm:text-2xl">{s.title}</h3>
                 </div>
-                <h3 className="text-xl sm:text-2xl">{s.title}</h3>
-                <p className="mt-3 text-sm text-foreground/70">{s.body}</p>
+                <p className="mt-4 text-sm text-foreground/70">{s.body}</p>
                 <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-navy group-hover:text-brand-blue">
                   Learn more <span aria-hidden>→</span>
                 </span>

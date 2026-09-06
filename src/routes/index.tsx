@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { User } from "lucide-react";
-import logo from "@/assets/logo.png";
-import heroShapes from "@/assets/hero-shapes.svg";
+
+
+import aboutIllustration from "@/assets/about.svg";
 import frustrationIcon from "@/assets/frustration.svg";
 import reachGoalsIcon from "@/assets/reach-goals.svg";
 import happyOfficeIcon from "@/assets/happy-office.svg";
 import mondayIllustration from "@/assets/monday.svg";
+import heroTiles from "@/assets/hero-shapes.svg";
 import upIllustration from "@/assets/up.svg";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -39,15 +41,15 @@ function Index() {
         <div aria-hidden className="absolute inset-0 -z-10 tile-bg opacity-60" />
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-4 pb-16 pt-12 sm:px-6 md:pt-20 lg:grid-cols-12 lg:gap-8 lg:pb-24">
           <div className="lg:col-span-7">
-            <span className="eyebrow">Systems &amp; Automation Consulting</span>
-            <h1 className="mt-4 font-display text-4xl leading-[0.98] tracking-tight text-navy sm:text-5xl md:text-6xl lg:text-7xl">
+            <span className="eyebrow animate-rise">Systems &amp; Automation Consulting</span>
+            <h1 className="mt-4 font-display text-4xl leading-[0.98] tracking-tight text-navy animate-rise delay-100 sm:text-5xl md:text-6xl lg:text-7xl">
               Is the backend of your business{" "}
-              <span className="accent-underline text-brand-blue">dragging you down?</span>
+              <span className="text-brand-blue">dragging you down?</span>
             </h1>
-            <p className="mt-5 max-w-xl text-base text-foreground/70 sm:text-lg">
+            <p className="mt-5 max-w-xl text-base text-foreground/70 animate-rise delay-200 sm:text-lg">
               Save yourself time, money, and aggravation by automating processes, workflows, and communication.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
+            <div className="mt-8 flex flex-col items-center gap-3 animate-rise delay-300 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <ContactButton subject="Grow my business">
                 Yes! I want to grow my business!
                 <span aria-hidden>→</span>
@@ -61,10 +63,10 @@ function Index() {
             </div>
           </div>
 
-          {/* Hero visual: geometric shapes matching the original brand */}
-          <div className="relative lg:col-span-5">
-            <div className="relative mx-auto w-full max-w-md sm:max-w-lg lg:max-w-xl">
-              <img src={heroShapes} alt="" className="h-auto w-full" />
+          {/* Hero visual — hidden on mobile */}
+          <div className="relative hidden animate-drop delay-300 sm:block lg:col-span-5">
+            <div className="relative mx-auto w-full max-w-[180px] sm:max-w-sm md:max-w-md lg:max-w-xl">
+              <img src={heroTiles} alt="Wilen Consulting brand tiles" className="h-auto w-full" />
             </div>
           </div>
         </div>
@@ -74,8 +76,8 @@ function Index() {
       <section className="border-t border-border bg-white">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
           <div className="mx-auto max-w-2xl text-center">
-            <span className="eyebrow">Sound familiar?</span>
-            <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl">
+            <span className="eyebrow animate-rise">Sound familiar?</span>
+            <h2 className="mt-3 text-3xl animate-rise delay-100 sm:text-4xl md:text-5xl">
               The frustration is real, <span className="text-brand-blue">and it's fixable.</span>
             </h2>
           </div>
@@ -84,18 +86,24 @@ function Index() {
               { icon: frustrationIcon, title: "Tired of haggling over petty details?", body: "Ready to abolish those error-induced headaches?" },
               { icon: reachGoalsIcon, title: "Wish you looked forward to Mondays?", body: "Do you wish you could wake up and look forward to a more productive day on the job?" },
               { icon: happyOfficeIcon, title: "A positive work atmosphere isn't luck.", body: "And a dynamic, thriving business doesn't create itself." },
-            ].map((c) => (
-              <article
-                key={c.title}
-                className="group rounded-2xl border border-border bg-background p-6 transition hover:-translate-y-1 hover:border-brand-blue/40 hover:shadow-xl sm:p-8"
-              >
-                <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary sm:h-20 sm:w-20">
-                  <img src={c.icon} alt="" className="h-12 w-12 sm:h-14 sm:w-14" />
-                </div>
-                <h3 className="text-xl sm:text-2xl">{c.title}</h3>
-                <p className="mt-3 text-sm text-foreground/70">{c.body}</p>
-              </article>
-            ))}
+            ].map((c, i) => {
+              const delays = ["delay-100", "delay-200", "delay-300"];
+              return (
+                <article
+                  key={c.title}
+                  className={`group rounded-2xl border border-border bg-background p-5 transition hover:-translate-y-1 hover:border-brand-blue/40 hover:shadow-xl animate-rise ${delays[i]} sm:p-8`}
+                >
+                  <div className="flex items-center gap-4 md:block">
+                    <div className={`grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-secondary animate-drop ${delays[i]} md:mb-5 md:h-20 md:w-20`}>
+                      <img src={c.icon} alt="" className="h-10 w-10 md:h-14 md:w-14" />
+                    </div>
+                    <h3 className="min-w-0 text-lg sm:text-xl md:text-2xl">{c.title}</h3>
+                  </div>
+                  <p className="mt-3 text-sm text-foreground/70">{c.body}</p>
+                </article>
+              );
+            })}
+
           </div>
         </div>
       </section>
@@ -103,13 +111,13 @@ function Index() {
       {/* SCIENCE OF SUCCESS — lighter band */}
       <section className="relative overflow-hidden bg-sky/30">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-16 sm:px-6 md:grid-cols-2 md:items-center md:py-24">
-          <div>
+          <div className="text-center animate-rise md:text-left">
             <span className="eyebrow">The Wilen Promise</span>
-            <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl">There's a science to success.</h2>
-            <p className="mt-4 max-w-lg text-foreground/75">
+            <h2 className="mt-3 text-3xl animate-rise delay-100 sm:text-4xl md:text-5xl">There's a science to success.</h2>
+            <p className="mt-4 max-w-lg text-foreground/75 animate-rise delay-200 md:mx-0 mx-auto">
               Change is possible. It's within reach. Let's make Monday great again, together.
             </p>
-            <div className="mt-8">
+            <div className="mt-8 flex justify-center animate-rise delay-300 md:justify-start">
               <ContactButton subject="Grow my business">
                 Yes! I want to grow my business!
                 <span aria-hidden>→</span>
@@ -117,7 +125,7 @@ function Index() {
             </div>
           </div>
           <div className="flex justify-center md:justify-end">
-            <img src={mondayIllustration} alt="A brighter Monday" className="h-64 w-auto sm:h-72 md:h-96" />
+            <img src={mondayIllustration} alt="A brighter Monday" className="h-64 w-auto animate-drop delay-200 sm:h-72 md:h-96" />
           </div>
         </div>
       </section>
@@ -125,37 +133,41 @@ function Index() {
       {/* WILEN PROMISE */}
       <section className="bg-background">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
-          <div>
+          <div className="animate-rise">
             <span className="eyebrow">The Wilen Promise</span>
-            <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl">
+            <h2 className="mt-3 text-3xl animate-rise delay-100 sm:text-4xl md:text-5xl">
               Professional. <span className="text-brand-blue">Personal.</span>{" "}
               <span className="text-brand-green">Practical.</span>
             </h2>
           </div>
           <ol className="mt-12 grid gap-6 md:grid-cols-3">
-            {promise.map((p, i) => (
-              <li key={p.title} className="relative rounded-2xl border border-border bg-white p-6 shadow-sm sm:p-8">
-                <span className="absolute -top-4 left-6 rounded-full bg-navy px-3 py-1 font-display text-sm text-white">
-                  0{i + 1}
-                </span>
-                <h3 className="text-2xl">{p.title}.</h3>
-                <p className="mt-3 text-sm text-foreground/70">{p.body}</p>
-              </li>
-            ))}
+            {promise.map((p, i) => {
+              const delays = ["delay-100", "delay-200", "delay-300"];
+              return (
+                <li key={p.title} className={`relative rounded-2xl border border-border bg-white p-6 shadow-sm animate-rise ${delays[i]} sm:p-8`}>
+                  <span className="absolute -top-4 left-6 rounded-full bg-navy px-3 py-1 font-display text-sm text-white">
+                    0{i + 1}
+                  </span>
+                  <h3 className="text-2xl">{p.title}.</h3>
+                  <p className="mt-3 text-sm text-foreground/70">{p.body}</p>
+                </li>
+              );
+            })}
           </ol>
-          <div className="mt-12 grid gap-8 rounded-3xl border border-border bg-sky/20 p-6 sm:grid-cols-[1fr_auto] sm:items-center sm:p-10">
+          <div className="mt-12 grid gap-4 rounded-3xl border border-border bg-sky/20 p-6 text-center animate-rise delay-200 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-6 sm:p-6 sm:text-left md:p-8">
             <div>
-              <p className="font-display text-2xl text-navy sm:text-3xl">
+              <p className="font-display text-2xl text-navy sm:text-2xl md:text-3xl">
                 Off the 9-5 treadmill. <span className="text-brand-green">Onto the elevator of success!</span>
               </p>
-              <div className="mt-5">
+              <div className="mt-4 flex justify-center sm:justify-start">
                 <ContactButton subject="Grow my business">
                   Yes! I want to grow my business!
                   <span aria-hidden>→</span>
                 </ContactButton>
               </div>
             </div>
-            <img src={upIllustration} alt="" className="mx-auto h-40 w-auto sm:h-48" />
+            <img src={upIllustration} alt="" className="mx-auto h-28 w-auto animate-drop delay-200 sm:h-32 md:h-36" />
+
           </div>
         </div>
       </section>
@@ -163,16 +175,16 @@ function Index() {
       {/* MEDICAL BILLING TEASER */}
       <section className="border-t border-border bg-white">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
-          <div className="rounded-3xl border border-border bg-sky/20 p-8 md:p-12">
+          <div className="rounded-3xl border border-border bg-sky/20 p-8 animate-rise delay-100 md:p-12">
             <span className="eyebrow">Featured system</span>
-            <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl">
+            <h2 className="mt-3 text-3xl animate-rise delay-100 sm:text-4xl md:text-5xl">
               HIPAA Compliant <span className="text-brand-blue">Medical Billing System</span>
             </h2>
-            <p className="mt-4 font-display text-xl text-navy/80">Stop chasing claims. Start closing them.</p>
-            <p className="mt-3 max-w-2xl text-foreground/70">
+            <p className="mt-4 font-display text-xl text-navy/80 animate-rise delay-200">Stop chasing claims. Start closing them.</p>
+            <p className="mt-3 max-w-2xl text-foreground/70 animate-rise delay-200">
               Our medical billing system automates claim submissions, payer negotiations, and HIPAA-compliant paperwork for medical practices.
             </p>
-            <div className="mt-6">
+            <div className="mt-6 animate-rise delay-300">
               <Link
                 to="/industries/$slug"
                 params={{ slug: "medical-billing" }}
@@ -188,12 +200,13 @@ function Index() {
       {/* MEET THE FOUNDER preview */}
       <section className="bg-background">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-16 sm:px-6 md:grid-cols-5 md:items-center md:py-24">
-          <div className="md:col-span-2">
-            <div className="mx-auto flex aspect-square w-full max-w-xs items-center justify-center rounded-3xl bg-white p-8 shadow-lg ring-1 ring-border">
-              <img src={logo} alt="Wilen Consulting" className="h-auto w-full max-w-[220px]" />
+          <div className="animate-rise md:col-span-2">
+            <div className="mx-auto flex w-full max-w-[180px] items-center justify-center sm:max-w-[220px] md:max-w-xs">
+              <img src={aboutIllustration} alt="Meet the founder" className="h-auto w-full" />
             </div>
           </div>
-          <div className="md:col-span-3">
+
+          <div className="animate-rise delay-200 md:col-span-3">
             <span className="eyebrow">Meet the founder</span>
             <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl">
               Aviva Wilen <span className="block text-brand-blue">BSME, Software and Systems Consultant</span>
@@ -218,35 +231,38 @@ function Index() {
       {/* TESTIMONIALS preview */}
       <section className="bg-white">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
-          <div>
+          <div className="animate-rise">
             <span className="eyebrow">What clients say</span>
-            <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl">Kind words from real business owners.</h2>
+            <h2 className="mt-3 text-3xl animate-rise delay-100 sm:text-4xl md:text-5xl">Kind words from real business owners.</h2>
           </div>
           <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {testimonials.slice(0, 2).map((t) => (
-              <figure key={t.name} className="flex flex-col justify-between rounded-2xl border border-border bg-background p-6 sm:p-8">
-                <div>
-                  <span className="font-display text-5xl leading-none text-brand-green">&ldquo;</span>
-                  <blockquote className="-mt-3 font-display text-xl leading-tight text-navy sm:text-2xl">{t.quote}</blockquote>
-                  <p className="mt-4 text-sm text-foreground/70">{t.body}</p>
-                </div>
-                <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-4">
-                  {t.image ? (
-                    <img src={t.image} alt="" className="h-12 w-12 rounded-full object-cover ring-1 ring-border" loading="lazy" decoding="async" />
-                  ) : (
-                    <div className="grid h-12 w-12 place-items-center rounded-full bg-sky/50 text-navy ring-1 ring-border" aria-hidden>
-                      <User className="h-6 w-6" strokeWidth={1.5} />
-                    </div>
-                  )}
+            {testimonials.slice(0, 2).map((t, i) => {
+              const delays = ["delay-100", "delay-200"];
+              return (
+                <figure key={t.name} className={`flex flex-col justify-between rounded-2xl border border-border bg-background p-6 animate-rise ${delays[i]} sm:p-8`}>
                   <div>
-                    <p className="font-semibold text-navy">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.role}</p>
+                    <span className="font-display text-5xl leading-none text-brand-green">&ldquo;</span>
+                    <blockquote className="-mt-3 font-display text-xl leading-tight text-navy sm:text-2xl">{t.quote}</blockquote>
+                    <p className="mt-4 text-sm text-foreground/70">{t.body}</p>
                   </div>
-                </figcaption>
-              </figure>
-            ))}
+                  <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-4">
+                    {t.image ? (
+                      <img src={t.image} alt="" className="h-12 w-12 rounded-full object-cover ring-1 ring-border" loading="lazy" decoding="async" />
+                    ) : (
+                      <div className="grid h-12 w-12 place-items-center rounded-full bg-sky/50 text-navy ring-1 ring-border" aria-hidden>
+                        <User className="h-6 w-6" strokeWidth={1.5} />
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-semibold text-navy">{t.name}</p>
+                      <p className="text-xs text-muted-foreground">{t.role}</p>
+                    </div>
+                  </figcaption>
+                </figure>
+              );
+            })}
           </div>
-          <div className="mt-8 text-center">
+          <div className="mt-8 text-center animate-rise delay-200">
             <Link to="/testimonials" className="inline-flex items-center gap-2 font-display text-lg text-navy underline decoration-brand-green decoration-4 underline-offset-4 hover:decoration-brand-blue">
               More fabulous reviews →
             </Link>

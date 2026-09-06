@@ -52,26 +52,36 @@ function CaseStudyDetail() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <PageHero eyebrow={`Case study · ${item.industry}`} title={item.title} intro={item.intro} />
+      <PageHero
+        eyebrow={`Case study · ${item.industry}`}
+        title={
+          <span className="flex flex-wrap items-center gap-4">
+            {item.logo && (
+              <img
+                src={item.logo}
+                alt={`${item.title} logo`}
+                className="h-14 w-auto max-w-[120px] shrink-0 object-contain sm:h-16"
+                loading="lazy"
+                decoding="async"
+              />
+            )}
+            <span>{item.title}</span>
+          </span>
+        }
+        intro={item.intro}
+      />
 
-      {(item.image || item.logo) && (
+      {item.image && (
         <section className="bg-background">
           <div className="mx-auto max-w-5xl px-4 pt-10 sm:px-6">
-            <div className="grid items-center gap-6 rounded-2xl border border-border bg-white p-6 shadow-sm sm:grid-cols-[1fr_auto] sm:p-8">
-              {item.image ? (
-                <img
-                  src={item.image}
-                  alt={`${item.title} project`}
-                  className="w-full rounded-xl object-cover"
-                  loading="lazy"
-                  decoding="async"
-                />
-              ) : (
-                <div />
-              )}
-              {item.logo && (
-                <img src={item.logo} alt={`${item.title} logo`} className="mx-auto h-auto max-h-32 w-auto max-w-[220px] object-contain" loading="lazy" decoding="async" />
-              )}
+            <div className="rounded-2xl border border-border bg-white p-6 shadow-sm sm:p-8">
+              <img
+                src={item.image}
+                alt={`${item.title} project`}
+                className="w-full rounded-xl object-cover"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
           </div>
         </section>

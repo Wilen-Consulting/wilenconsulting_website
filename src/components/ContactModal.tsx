@@ -1,5 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { submitContactForm } from "@/lib/contact-form";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { submitContactForm } from "@/lib/contact-endpoint";
 
 type Ctx = { open: (subject?: string) => void; close: () => void };
 
@@ -15,13 +15,12 @@ export function ContactModalProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [subject, setSubject] = useState<string | undefined>(undefined);
   const [sent, setSent] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
 
   const open = useCallback((s?: string) => {
     setSubject(s);
     setSent(false);
-    setError(null);
+    setStatus("idle");
     setIsOpen(true);
   }, []);
   const close = useCallback(() => setIsOpen(false), []);
@@ -55,10 +54,10 @@ export function ContactModalProvider({ children }: { children: ReactNode }) {
           <button
             type="button"
             aria-label="Close contact form"
-            className="absolute inset-0 bg-navy/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-navy/20 backdrop-blur-[2px]"
             onClick={close}
           />
-          <div className="relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+          <div className="relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/5">
             <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-4 sm:px-8">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-brand-blue">Contact us</p>
@@ -92,24 +91,24 @@ export function ContactModalProvider({ children }: { children: ReactNode }) {
                 </div>
               ) : (
                 <form
-                  onSubmit={async (e) => {
+                  onSubmit={async (e: FormEvent<HTMLFormElement>) => {
                     e.preventDefault();
-                    setError(null);
-                    setSending(true);
-                    const data = new FormData(e.currentTarget);
+                    const form = e.currentTarget;
+                    const data = new FormData(form);
+                    setStatus("loading");
                     try {
                       await submitContactForm({
-                        name: String(data.get("name") ?? ""),
-                        email: String(data.get("email") ?? ""),
-                        company: String(data.get("company") ?? ""),
-                        message: String(data.get("message") ?? ""),
-                        subject,
+                        name: String(data.get("name") || ""),
+                        email: String(data.get("email") || ""),
+                        company: String(data.get("company") || ""),
+                        message: String(data.get("message") || ""),
+                        source: subject ? `Contact modal (${subject})` : "Contact modal",
                       });
+                      setStatus("idle");
                       setSent(true);
                     } catch (err) {
-                      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
-                    } finally {
-                      setSending(false);
+                      console.error(err);
+                      setStatus("error");
                     }
                   }}
                 >
@@ -150,20 +149,24 @@ export function ContactModalProvider({ children }: { children: ReactNode }) {
                       name="message"
                       required
                       rows={5}
-                      defaultValue={subject ? `I'm interested in: ${subject}\n\n` : ""}
+                      defaultValue=""
                       className="mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-brand-blue"
-                      placeholder="Tell us a little about the workflow that's causing pain."
+                      placeholder="Tell us what's going on. We'll figure out a fix."
                     />
                   </label>
-                  {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+                  {status === "error" && (
+                    <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-center text-xs text-red-700">
+                      Something went wrong sending your message. Please try again, or email us directly at aviva@wilenconsulting.com.
+                    </p>
+                  )}
                   <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
                     <p className="text-xs text-muted-foreground">We reply within one business day.</p>
                     <button
                       type="submit"
-                      disabled={sending}
+                      disabled={status === "loading"}
                       className="inline-flex items-center gap-2 rounded-full bg-brand-green px-6 py-3 text-sm font-semibold text-white shadow-md shadow-brand-green/25 transition hover:brightness-95 disabled:opacity-70"
                     >
-                      {sending ? "Sending…" : "Send message"}
+                      {status === "loading" ? "Sending…" : "Send message"}
                       <span aria-hidden>→</span>
                     </button>
                   </div>

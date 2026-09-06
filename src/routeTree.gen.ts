@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TestimonialsRouteImport } from './routes/testimonials'
+import { Route as ReferralProgramRouteImport } from './routes/referral-program'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
@@ -24,6 +25,11 @@ import { Route as CaseStudiesSlugRouteImport } from './routes/case-studies.$slug
 const TestimonialsRoute = TestimonialsRouteImport.update({
   id: '/testimonials',
   path: '/testimonials',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReferralProgramRoute = ReferralProgramRouteImport.update({
+  id: '/referral-program',
+  path: '/referral-program',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
+  '/referral-program': typeof ReferralProgramRoute
   '/testimonials': typeof TestimonialsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/industries/$slug': typeof IndustriesSlugRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
+  '/referral-program': typeof ReferralProgramRoute
   '/testimonials': typeof TestimonialsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/industries/$slug': typeof IndustriesSlugRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
+  '/referral-program': typeof ReferralProgramRoute
   '/testimonials': typeof TestimonialsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/industries/$slug': typeof IndustriesSlugRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/login'
+    | '/referral-program'
     | '/testimonials'
     | '/case-studies/$slug'
     | '/industries/$slug'
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/login'
+    | '/referral-program'
     | '/testimonials'
     | '/case-studies/$slug'
     | '/industries/$slug'
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/login'
+    | '/referral-program'
     | '/testimonials'
     | '/case-studies/$slug'
     | '/industries/$slug'
@@ -164,6 +176,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
   LoginRoute: typeof LoginRoute
+  ReferralProgramRoute: typeof ReferralProgramRoute
   TestimonialsRoute: typeof TestimonialsRoute
   CaseStudiesSlugRoute: typeof CaseStudiesSlugRoute
   IndustriesSlugRoute: typeof IndustriesSlugRoute
@@ -180,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/testimonials'
       fullPath: '/testimonials'
       preLoaderRoute: typeof TestimonialsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/referral-program': {
+      id: '/referral-program'
+      path: '/referral-program'
+      fullPath: '/referral-program'
+      preLoaderRoute: typeof ReferralProgramRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -260,6 +280,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
   LoginRoute: LoginRoute,
+  ReferralProgramRoute: ReferralProgramRoute,
   TestimonialsRoute: TestimonialsRoute,
   CaseStudiesSlugRoute: CaseStudiesSlugRoute,
   IndustriesSlugRoute: IndustriesSlugRoute,

@@ -47,7 +47,7 @@ function IndustryDetail() {
         <div className="mx-auto max-w-5xl px-4 py-14 sm:px-6">
           {/* Intro */}
           <div className="max-w-3xl">
-            <p className="eyebrow">Why {item.title}</p>
+            <p className="eyebrow">How we help</p>
             <h2 className="mt-2 font-display text-3xl text-navy sm:text-4xl">{item.tagline}</h2>
             <p className="mt-4 text-[17px] leading-relaxed text-foreground/75">{item.body}</p>
             <div className="mt-6 flex flex-wrap gap-3">
@@ -93,8 +93,8 @@ function IndustryDetail() {
 
           {/* Features */}
           <div className="mt-16">
-            <p className="eyebrow">What you get</p>
-            <h3 className="mt-2 text-2xl sm:text-3xl">Built for {item.title.toLowerCase()}</h3>
+            <p className="eyebrow">Some ways we help businesses like yours</p>
+            <h3 className="mt-2 text-2xl sm:text-3xl">Every build is shaped around your team. Here are a few examples.</h3>
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               {item.features.map((f: { title: string; body: string }, i: number) => (
                 <div key={i} className="rounded-2xl border border-border bg-white p-6 shadow-sm">
@@ -103,21 +103,26 @@ function IndustryDetail() {
                 </div>
               ))}
             </div>
+            <p className="mt-6 text-sm text-foreground/70">Have something else in mind? Bring us your workflow and we&rsquo;ll design around it.</p>
           </div>
 
           {/* Outcomes */}
           {item.outcomes && (
-            <div className="mt-16 rounded-2xl border border-border bg-secondary/40 p-8 sm:p-12">
+            <div className="mt-16 rounded-2xl border border-border bg-secondary/40 p-5 sm:p-8 md:p-12">
               <p className="eyebrow">Outcomes</p>
               <h3 className="mt-2 text-2xl text-navy sm:text-3xl">What changes for your team</h3>
-              <div className="mt-6 grid gap-4 sm:grid-cols-3">
+              <div className="mt-6 grid gap-3 sm:grid-cols-3 sm:gap-4">
                 {item.outcomes.map((o: string, i: number) => (
-                  <div key={i} className="rounded-xl border border-border bg-white p-5 shadow-sm">
-                    <p className="text-foreground/80">{o}</p>
+                  <div key={i} className="rounded-xl border border-border bg-white p-4 shadow-sm sm:p-5">
+                    <p className="text-sm text-foreground/80 sm:text-base">{o}</p>
                   </div>
                 ))}
               </div>
-              <div className="mt-8">
+              <div className="mt-10 flex flex-col items-center gap-4 rounded-xl bg-white p-6 shadow-sm sm:flex-row sm:justify-between sm:p-8">
+                <div className="text-center sm:text-left">
+                  <p className="font-display text-xl text-navy sm:text-2xl">Want this for your team?</p>
+                  <p className="mt-1 text-sm text-foreground/70">Tell us what you're running today and we'll map out the fix.</p>
+                </div>
                 <ContactButton variant="primary" subject={`${item.title} industry`}>
                   Contact us
                 </ContactButton>

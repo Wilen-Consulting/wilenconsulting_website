@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import logo from "@/assets/logo.png";
 import { services, industries, caseStudies } from "@/lib/site-data";
@@ -25,12 +25,18 @@ const groups: NavGroup[] = [
     items: caseStudies.map((c) => ({ label: c.title, to: `/case-studies/${c.slug}` })),
   },
   { label: "Testimonials", to: "/testimonials" },
+  { label: "Referral Program", to: "/referral-program" },
 ];
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const { open: openContact } = useContactModal();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const onContactPage = pathname === "/contact";
+
+  
+  
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/90 backdrop-blur">
@@ -78,13 +84,22 @@ export function SiteHeader() {
           >
             Client Login
           </Link>
-          <button
-            type="button"
-            onClick={() => openContact()}
-            className="rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-brand-blue"
-          >
-            Contact Us
-          </button>
+          {onContactPage ? (
+            <button
+              type="button"
+              onClick={() => openContact()}
+              className="rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-brand-blue"
+            >
+              Contact Us
+            </button>
+          ) : (
+            <Link
+              to="/contact"
+              className="rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-brand-blue"
+            >
+              Contact Us
+            </Link>
+          )}
         </div>
 
         <button
@@ -137,16 +152,26 @@ export function SiteHeader() {
                 )}
               </div>
             ))}
-            <button
-              type="button"
-              onClick={() => {
-                setMenuOpen(false);
-                openContact();
-              }}
-              className="mt-3 rounded-full bg-navy px-4 py-2.5 text-center text-sm font-semibold text-primary-foreground"
-            >
-              Contact Us
-            </button>
+            {onContactPage ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  openContact();
+                }}
+                className="mt-3 rounded-full bg-navy px-4 py-2.5 text-center text-sm font-semibold text-primary-foreground"
+              >
+                Contact Us
+              </button>
+            ) : (
+              <Link
+                to="/contact"
+                onClick={() => setMenuOpen(false)}
+                className="mt-3 rounded-full bg-navy px-4 py-2.5 text-center text-sm font-semibold text-primary-foreground"
+              >
+                Contact Us
+              </Link>
+            )}
             <Link
               to="/login"
               onClick={() => setMenuOpen(false)}
