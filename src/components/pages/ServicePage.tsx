@@ -1,43 +1,11 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PageHero } from "@/components/PageHero";
 import { ContactButton } from "@/components/ContactModal";
-import { services, shared } from "@/lib/site-data";
+import { services, shared, type Service } from "@/lib/site-data";
 
-export const Route = createFileRoute("/services/$slug")({
-  loader: ({ params }) => {
-    const item = services.find((s) => s.slug === params.slug);
-    if (!item) throw notFound();
-    return { item };
-  },
-  head: ({ loaderData }) =>
-    loaderData
-      ? {
-          meta: [
-            { title: `${loaderData.item.title} | Wilen Consulting` },
-            { name: "description", content: loaderData.item.body },
-          ],
-        }
-      : { meta: [{ title: "Service not found" }, { name: "robots", content: "noindex" }] },
-  component: ServiceDetail,
-  notFoundComponent: () => (
-    <div className="min-h-screen bg-background">
-      <SiteHeader />
-      <div className="mx-auto max-w-3xl px-6 py-24 text-center">
-        <h1 className="text-4xl text-navy">Service not found</h1>
-        <p className="mt-4 text-foreground/70">The page you're looking for doesn't exist.</p>
-        <Link to="/services" className="mt-6 inline-flex rounded-full bg-navy px-6 py-3 text-sm font-semibold text-white">
-          Back to services
-        </Link>
-      </div>
-      <SiteFooter />
-    </div>
-  ),
-});
-
-function ServiceDetail() {
-  const { item } = Route.useLoaderData();
+export function ServicePage({ item }: { item: Service }) {
   const { content } = item;
   const others = services.filter((s) => s.slug !== item.slug).slice(0, 4);
 
@@ -206,7 +174,7 @@ function ServiceDetail() {
               {others.map((o) => (
                 <Link
                   key={o.slug}
-                  to="/services/$slug"
+                  to="/$slug"
                   params={{ slug: o.slug }}
                   className="flex items-center gap-3 rounded-xl border border-border bg-white p-4 text-sm hover:border-brand-blue/40 hover:shadow-md"
                 >

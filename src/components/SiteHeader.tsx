@@ -12,17 +12,17 @@ const groups: NavGroup[] = [
   {
     label: "Services",
     to: "/services",
-    items: services.map((s) => ({ label: s.title, to: `/services/${s.slug}` })),
+    items: services.map((s) => ({ label: s.title, to: `/${s.slug}` })),
   },
   {
     label: "Top Industries",
     to: "/industries",
-    items: industries.map((i) => ({ label: i.title, to: `/industries/${i.slug}` })),
+    items: industries.map((i) => ({ label: i.title, to: `/${i.slug}` })),
   },
   {
     label: "Case Studies",
     to: "/case-studies",
-    items: caseStudies.map((c) => ({ label: c.title, to: `/case-studies/${c.slug}` })),
+    items: caseStudies.map((c) => ({ label: c.title, to: `/${c.slug}` })),
   },
   { label: "Testimonials", to: "/testimonials" },
   { label: "Referral Program", to: "/referral-program" },
@@ -34,6 +34,11 @@ export function SiteHeader() {
   const { open: openContact } = useContactModal();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const onContactPage = pathname === "/contact";
+  // Service, industry, and case study pages live at top-level URLs (e.g. /medical-billing),
+  // so the router can't tell they belong to a menu group. Highlight the group label when the
+  // current page is one of its dropdown items.
+  const isGroupActive = (g: NavGroup) =>
+    g.items?.some((it) => it.to === pathname || it.to === pathname.replace(/\/$/, "")) ?? false;
 
   
   
@@ -50,7 +55,9 @@ export function SiteHeader() {
             <div key={g.label} className="group relative">
               <Link
                 to={g.to}
-                className="flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition hover:bg-secondary hover:text-navy"
+                className={`flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition hover:bg-secondary hover:text-navy ${
+                  isGroupActive(g) ? "text-navy" : "text-foreground/80"
+                }`}
                 activeProps={{ className: "text-navy" }}
                 activeOptions={g.to === "/" ? { exact: true } : undefined}
               >

@@ -1,39 +1,9 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PageHero } from "@/components/PageHero";
 import { ContactButton } from "@/components/ContactModal";
 import { caseStudies, type CaseStudy } from "@/lib/site-data";
-
-export const Route = createFileRoute("/case-studies/$slug")({
-  loader: ({ params }) => {
-    const item = caseStudies.find((s) => s.slug === params.slug);
-    if (!item) throw notFound();
-    return { item };
-  },
-  head: ({ loaderData }) =>
-    loaderData
-      ? {
-          meta: [
-            { title: `${loaderData.item.title} | Case Study` },
-            { name: "description", content: loaderData.item.summary },
-          ],
-        }
-      : { meta: [{ title: "Case study not found" }, { name: "robots", content: "noindex" }] },
-  component: CaseStudyDetail,
-  notFoundComponent: () => (
-    <div className="min-h-screen bg-background">
-      <SiteHeader />
-      <div className="mx-auto max-w-3xl px-6 py-24 text-center">
-        <h1 className="text-4xl text-navy">Case study not found</h1>
-        <Link to="/case-studies" className="mt-6 inline-flex rounded-full bg-navy px-6 py-3 text-sm font-semibold text-white">
-          Back to case studies
-        </Link>
-      </div>
-      <SiteFooter />
-    </div>
-  ),
-});
 
 function MetricCard({ label, value, tone }: { label: string; value: string; tone: "before" | "after" }) {
   return (
@@ -45,8 +15,7 @@ function MetricCard({ label, value, tone }: { label: string; value: string; tone
   );
 }
 
-function CaseStudyDetail() {
-  const { item } = Route.useLoaderData() as { item: CaseStudy };
+export function CaseStudyPage({ item }: { item: CaseStudy }) {
   const hasMetrics = item.before.metricValue && item.after.metricValue;
 
   return (
@@ -146,8 +115,6 @@ function CaseStudyDetail() {
             </div>
           </div>
           </div>
-
-
 
           {/* Metrics */}
           {hasMetrics && (

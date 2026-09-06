@@ -30,7 +30,7 @@ function IndustriesIndex() {
             {industries.map((ind, i) => (
               <Link
                 key={ind.slug}
-                to="/industries/$slug"
+                to="/$slug"
                 params={{ slug: ind.slug }}
                 className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-white p-6 transition hover:-translate-y-0.5 hover:border-navy/40 hover:shadow-lg sm:p-8"
               >

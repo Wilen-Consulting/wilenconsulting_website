@@ -186,7 +186,7 @@ function Index() {
             </p>
             <div className="mt-6 animate-rise delay-300">
               <Link
-                to="/industries/$slug"
+                to="/$slug"
                 params={{ slug: "medical-billing" }}
                 className="inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-blue"
               >

@@ -37,7 +37,7 @@ function ServicesIndex() {
             {services.map((s) => (
               <Link
                 key={s.slug}
-                to="/services/$slug"
+                to="/$slug"
                 params={{ slug: s.slug }}
                 className="group flex flex-col rounded-2xl border border-border bg-white p-6 transition hover:-translate-y-1 hover:border-brand-blue/40 hover:shadow-xl"
               >

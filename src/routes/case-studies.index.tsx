@@ -29,7 +29,7 @@ function CaseStudiesIndex() {
             {caseStudies.map((c) => (
               <Link
                 key={c.slug}
-                to="/case-studies/$slug"
+                to="/$slug"
                 params={{ slug: c.slug }}
                 className="group overflow-hidden rounded-2xl border border-border bg-white transition hover:-translate-y-1 hover:border-brand-blue/40 hover:shadow-xl"
               >

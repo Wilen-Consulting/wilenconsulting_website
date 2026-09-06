@@ -1,42 +1,11 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PageHero } from "@/components/PageHero";
 import { ContactButton } from "@/components/ContactModal";
-import { industries } from "@/lib/site-data";
+import { industries, type IndustryDetail } from "@/lib/site-data";
 
-export const Route = createFileRoute("/industries/$slug")({
-  loader: ({ params }) => {
-    const item = industries.find((s) => s.slug === params.slug);
-    if (!item) throw notFound();
-    return { item };
-  },
-  head: ({ loaderData }) =>
-    loaderData
-      ? {
-          meta: [
-            { title: `${loaderData.item.title} | Wilen Consulting` },
-            { name: "description", content: loaderData.item.body },
-          ],
-        }
-      : { meta: [{ title: "Industry not found" }, { name: "robots", content: "noindex" }] },
-  component: IndustryDetail,
-  notFoundComponent: () => (
-    <div className="min-h-screen bg-background">
-      <SiteHeader />
-      <div className="mx-auto max-w-3xl px-6 py-24 text-center">
-        <h1 className="text-4xl text-navy">Industry not found</h1>
-        <Link to="/industries" className="mt-6 inline-flex rounded-full bg-navy px-6 py-3 text-sm font-semibold text-white">
-          Back to industries
-        </Link>
-      </div>
-      <SiteFooter />
-    </div>
-  ),
-});
-
-function IndustryDetail() {
-  const { item } = Route.useLoaderData();
+export function IndustryPage({ item }: { item: IndustryDetail }) {
   const others = industries.filter((i) => i.slug !== item.slug);
   return (
     <div className="min-h-screen bg-background">
@@ -137,7 +106,7 @@ function IndustryDetail() {
               {others.map((o) => (
                 <Link
                   key={o.slug}
-                  to="/industries/$slug"
+                  to="/$slug"
                   params={{ slug: o.slug }}
                   className="group relative rounded-lg border border-border bg-white p-4 text-sm hover:border-navy/40 hover:shadow-md"
                 >
