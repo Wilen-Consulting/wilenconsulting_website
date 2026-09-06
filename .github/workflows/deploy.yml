@@ -1,0 +1,82 @@
+name: Build and deploy to Bluehost
+
+# Runs on every push to main (and on demand from the Actions tab).
+# Builds the static site and uploads only the files that changed to public_html
+# over SSH. Nothing on the server is ever deleted by this workflow.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build static site
+        run: bun run build
+
+      - name: Add .htaccess and 404 page to the build output
+        run: |
+          cp deploy/.htaccess dist/client/.htaccess
+          # Serve the built app once and capture its "Page not found" page as 404.html
+          bun run preview --host 127.0.0.1 --port 4173 > /tmp/preview.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -s -o /dev/null http://127.0.0.1:4173/; then break; fi
+            sleep 1
+          done
+          curl -s -o dist/client/404.html http://127.0.0.1:4173/this-page-does-not-exist || true
+          grep -q "Page not found" dist/client/404.html || { echo "404.html was not generated"; exit 1; }
+          echo "Build output:"; find dist/client -maxdepth 1 | sort
+
+      - name: Set up SSH key
+        env:
+          DEPLOY_KEY: ${{ secrets.BLUEHOST_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.BLUEHOST_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p 22 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Upload changed files to public_html
+        env:
+          DEPLOY_HOST: ${{ secrets.BLUEHOST_HOST }}
+          DEPLOY_USER: ${{ secrets.BLUEHOST_USER }}
+        run: |
+          # --no-delete semantics: rsync only adds/updates. Server-only files
+          # (services/index.html, medex, junees, WordPress leftovers) are untouched.
+          rsync -rlvz --checksum \
+            --no-perms --no-owner --no-group --omit-dir-times \
+            --exclude-from=deploy/rsync-exclude.txt \
+            -e "ssh -i ~/.ssh/deploy_key -p 22 -o StrictHostKeyChecking=yes" \
+            dist/client/ "$DEPLOY_USER@$DEPLOY_HOST:public_html/"
+
+      - name: Smoke test the live site
+        run: |
+          set -e
+          for path in / /medical-billing/ /custom-portals/ /for-tech-electric/; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "https://wilenconsulting.com$path")
+            echo "$path -> $code"
+            [ "$code" = "200" ] || exit 1
+          done
+          code=$(curl -s -o /dev/null -w "%{http_code}" "https://wilenconsulting.com/industries/medical-billing/")
+          echo "/industries/medical-billing/ -> $code (expect 301)"
+          [ "$code" = "301" ] || exit 1

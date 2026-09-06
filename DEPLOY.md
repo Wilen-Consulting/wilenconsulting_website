@@ -24,10 +24,22 @@ Requires Bun (or Node 22 with npm).
 
 Output is dist/client. Every page is prerendered to <path>/index.html by crawling links from /. The build config is vite.config.ts (nitro disabled, TanStack prerender enabled, preview server bound to 127.0.0.1).
 
-## Upload (cPanel File Manager)
+## Deploy (automatic, from GitHub)
 
-1. Zip the contents of dist/client (not the folder itself), plus the .htaccess.
-2. Do NOT include services/index.html. The copy on the server is a separate hand edited landing page (Aug 2026) and must be left alone.
+Every push to the main branch runs .github/workflows/deploy.yml, which builds the site, adds deploy/.htaccess and a generated 404.html, and rsyncs dist/client to public_html on Bluehost over SSH. Only changed files are uploaded and nothing is deleted on the server. deploy/rsync-exclude.txt lists build files that must never be uploaded (services/index.html, which is a separate hand edited landing page on the server).
+
+Repository secrets required (GitHub repo, Settings, Secrets and variables, Actions):
+
+- BLUEHOST_HOST: 50.87.186.138
+- BLUEHOST_USER: wilencon
+- BLUEHOST_SSH_KEY: the private key whose public half is authorized in Bluehost (Hosting, SSH Keys, Manage)
+
+To redeploy without a code change, open the Actions tab and run "Build and deploy to Bluehost" manually.
+
+## Manual upload (fallback, cPanel File Manager)
+
+1. Build, then zip the contents of dist/client (not the folder itself), plus deploy/.htaccess.
+2. Do NOT include services/index.html.
 3. Upload the zip to public_html, right click it, Extract, and confirm overwrite.
 4. Delete the zip from public_html afterwards.
 

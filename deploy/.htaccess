@@ -1,0 +1,15 @@
+# Wilen Consulting static site (TanStack Start prerender)
+
+# Serve the app's own 404 page for unknown URLs
+ErrorDocument 404 /404.html
+
+# Industry pages moved from /industries/<slug> to /<slug> (Sept 2026)
+RedirectMatch 301 ^/industries/(medical-billing|apparel|warehouse-management|aba)/?$ /$1/
+
+# Service and case study pages have always been top level on this build;
+# catch any old nested links from earlier versions of the site
+RedirectMatch 301 ^/services/(custom-portals|integrations|custom-solutions|software-support|process-management|workflow-improvements|financial-services|human-resources|data-management)/?$ /$1/
+RedirectMatch 301 ^/case-studies/(for-tech-electric|property-management|dental-wholesalers|environmental-controls)/?$ /$1/
+
+# Old WordPress URL with a typo in "environmental"
+RedirectMatch 301 ^/enviromental-controls/?$ /environmental-controls/
