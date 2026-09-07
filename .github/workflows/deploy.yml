@@ -74,21 +74,35 @@ jobs:
           grep -q "Page not found" dist/client/404.html || { echo "404.html was not generated"; exit 1; }
           echo "Build output:"; find dist/client -maxdepth 1 | sort
 
-      - name: Set up SSH key
+      - name: Set up SSH key and test login
         env:
           DEPLOY_KEY: ${{ secrets.BLUEHOST_SSH_KEY }}
         run: |
           mkdir -p ~/.ssh
           printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p 22 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null
-          echo "Testing SSH login..."
-          ssh -i ~/.ssh/deploy_key -p 22 -o StrictHostKeyChecking=yes "$DEPLOY_USER@$DEPLOY_HOST" 'echo connected as $(whoami); which rsync || echo "rsync missing on server"'
+          echo "Key file: $(wc -l < ~/.ssh/deploy_key) lines, first line: $(head -c 35 ~/.ssh/deploy_key)"
+          echo "Host: ${DEPLOY_HOST:-(empty)}  User: ${DEPLOY_USER:-(empty)}"
+          [ -n "$DEPLOY_HOST" ] && [ -n "$DEPLOY_USER" ] || { echo "BLUEHOST_HOST or BLUEHOST_USER secret is empty"; exit 1; }
+          ok=""
+          for port in 22 2222; do
+            echo "Trying SSH on port $port ..."
+            if ssh -i ~/.ssh/deploy_key -p "$port" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 -o BatchMode=yes \
+                 "$DEPLOY_USER@$DEPLOY_HOST" 'echo "connected as $(whoami)"; which rsync || echo "rsync missing on server"'; then
+              ok="$port"; break
+            fi
+          done
+          if [ -z "$ok" ]; then
+            echo "SSH login failed on both ports. Verbose output from port 22:"
+            ssh -v -i ~/.ssh/deploy_key -p 22 -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 -o BatchMode=yes "$DEPLOY_USER@$DEPLOY_HOST" true 2>&1 | tail -25 || true
+            exit 1
+          fi
+          echo "SSH_PORT=$ok" >> "$GITHUB_ENV"
 
       - name: Confirm the target folder exists on the server
         run: |
           if [ "$TARGET" = "production" ]; then P="$PROD_PATH"; else P="$STAGING_PATH"; fi
-          ssh -i ~/.ssh/deploy_key -p 22 -o StrictHostKeyChecking=yes "$DEPLOY_USER@$DEPLOY_HOST" \
+          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" -o StrictHostKeyChecking=accept-new "$DEPLOY_USER@$DEPLOY_HOST" \
             "test -d '$P' && echo 'Found: $P' || { echo 'Folder not found on server: $P'; exit 1; }"
 
       - name: Upload changed files (rsync, never deletes)
@@ -101,7 +115,7 @@ jobs:
           rsync -rlvz --checksum \
             --no-perms --no-owner --no-group --omit-dir-times \
             $EXCL \
-            -e "ssh -i ~/.ssh/deploy_key -p 22 -o StrictHostKeyChecking=yes" \
+            -e "ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o StrictHostKeyChecking=accept-new" \
             dist/client/ "$DEPLOY_USER@$DEPLOY_HOST:$P/"
 
       - name: Smoke test
