@@ -1,0 +1,13 @@
+# Staging copy (test.wilenconsulting.com). Same rules as production plus noindex
+# so search engines never index the staging site.
+
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>
+
+ErrorDocument 404 /404.html
+
+RedirectMatch 301 ^/industries/(medical-billing|apparel|warehouse-management|aba)/?$ /$1/
+RedirectMatch 301 ^/services/(custom-portals|integrations|custom-solutions|software-support|process-management|workflow-improvements|financial-services|human-resources|data-management)/?$ /$1/
+RedirectMatch 301 ^/case-studies/(for-tech-electric|property-management|dental-wholesalers|environmental-controls)/?$ /$1/
+RedirectMatch 301 ^/enviromental-controls/?$ /environmental-controls/

@@ -1,24 +1,48 @@
 name: Build and deploy to Bluehost
 
-# Runs on every push to main (and on demand from the Actions tab).
-# Builds the static site and uploads only the files that changed to public_html
-# over SSH. Nothing on the server is ever deleted by this workflow.
+# Two targets on the same Bluehost account:
+#   staging    -> test.wilenconsulting.com  (every push to main lands here automatically)
+#   production -> wilenconsulting.com       (only when a person runs this workflow by hand
+#                                             from the Actions tab and picks "production")
+# The site is built here on GitHub's runner and the static output is copied to the server
+# over SSH with rsync. Only changed files are uploaded; nothing on the server is deleted.
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      target:
+        description: "Where to deploy"
+        type: choice
+        required: true
+        default: staging
+        options:
+          - staging
+          - production
 
 concurrency:
-  group: deploy-production
+  group: deploy-${{ github.event_name == 'push' && 'staging' || inputs.target }}
   cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      TARGET: ${{ github.event_name == 'push' && 'staging' || inputs.target }}
+      DEPLOY_HOST: ${{ secrets.BLUEHOST_HOST }}
+      DEPLOY_USER: ${{ secrets.BLUEHOST_USER }}
+      # Folder on the server for each target, relative to the SSH user's home.
+      PROD_PATH: public_html
+      STAGING_PATH: ${{ vars.BLUEHOST_STAGING_PATH || 'public_html/website_a8d14258' }}
 
     steps:
+      - name: Show target
+        run: |
+          echo "Deploying to: $TARGET"
+          if [ "$TARGET" = "production" ]; then echo "Server folder: $PROD_PATH"; else echo "Server folder: $STAGING_PATH"; fi
+
       - name: Check out repository
         uses: actions/checkout@v4
 
@@ -35,7 +59,11 @@ jobs:
 
       - name: Add .htaccess and 404 page to the build output
         run: |
-          cp deploy/.htaccess dist/client/.htaccess
+          if [ "$TARGET" = "production" ]; then
+            cp deploy/.htaccess dist/client/.htaccess
+          else
+            cp deploy/.htaccess.staging dist/client/.htaccess
+          fi
           # Serve the built app once and capture its "Page not found" page as 404.html
           bun run preview --host 127.0.0.1 --port 4173 > /tmp/preview.log 2>&1 &
           for i in $(seq 1 30); do
@@ -49,34 +77,49 @@ jobs:
       - name: Set up SSH key
         env:
           DEPLOY_KEY: ${{ secrets.BLUEHOST_SSH_KEY }}
-          DEPLOY_HOST: ${{ secrets.BLUEHOST_HOST }}
         run: |
           mkdir -p ~/.ssh
           printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p 22 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          echo "Testing SSH login..."
+          ssh -i ~/.ssh/deploy_key -p 22 -o StrictHostKeyChecking=yes "$DEPLOY_USER@$DEPLOY_HOST" 'echo connected as $(whoami); which rsync || echo "rsync missing on server"'
 
-      - name: Upload changed files to public_html
-        env:
-          DEPLOY_HOST: ${{ secrets.BLUEHOST_HOST }}
-          DEPLOY_USER: ${{ secrets.BLUEHOST_USER }}
+      - name: Confirm the target folder exists on the server
         run: |
-          # --no-delete semantics: rsync only adds/updates. Server-only files
-          # (services/index.html, medex, junees, WordPress leftovers) are untouched.
+          if [ "$TARGET" = "production" ]; then P="$PROD_PATH"; else P="$STAGING_PATH"; fi
+          ssh -i ~/.ssh/deploy_key -p 22 -o StrictHostKeyChecking=yes "$DEPLOY_USER@$DEPLOY_HOST" \
+            "test -d '$P' && echo 'Found: $P' || { echo 'Folder not found on server: $P'; exit 1; }"
+
+      - name: Upload changed files (rsync, never deletes)
+        run: |
+          if [ "$TARGET" = "production" ]; then
+            P="$PROD_PATH"; EXCL="--exclude-from=deploy/rsync-exclude.txt"
+          else
+            P="$STAGING_PATH"; EXCL=""
+          fi
           rsync -rlvz --checksum \
             --no-perms --no-owner --no-group --omit-dir-times \
-            --exclude-from=deploy/rsync-exclude.txt \
+            $EXCL \
             -e "ssh -i ~/.ssh/deploy_key -p 22 -o StrictHostKeyChecking=yes" \
-            dist/client/ "$DEPLOY_USER@$DEPLOY_HOST:public_html/"
+            dist/client/ "$DEPLOY_USER@$DEPLOY_HOST:$P/"
 
-      - name: Smoke test the live site
+      - name: Smoke test
         run: |
-          set -e
+          if [ "$TARGET" = "production" ]; then BASE="https://wilenconsulting.com"; else BASE="https://test.wilenconsulting.com"; fi
+          fail=0
           for path in / /medical-billing/ /custom-portals/ /for-tech-electric/; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" "https://wilenconsulting.com$path")
-            echo "$path -> $code"
-            [ "$code" = "200" ] || exit 1
+            code=$(curl -s -o /dev/null -w "%{http_code}" -A "Mozilla/5.0 (deploy check)" "$BASE$path")
+            echo "$BASE$path -> $code"
+            [ "$code" = "200" ] || fail=1
           done
-          code=$(curl -s -o /dev/null -w "%{http_code}" "https://wilenconsulting.com/industries/medical-billing/")
-          echo "/industries/medical-billing/ -> $code (expect 301)"
-          [ "$code" = "301" ] || exit 1
+          code=$(curl -s -o /dev/null -w "%{http_code}" -A "Mozilla/5.0 (deploy check)" "$BASE/industries/medical-billing/")
+          echo "$BASE/industries/medical-billing/ -> $code (expect 301)"
+          [ "$code" = "301" ] || fail=1
+          if [ "$fail" = "1" ]; then
+            if [ "$TARGET" = "production" ]; then
+              echo "Production smoke test failed. Check the site now."; exit 1
+            else
+              echo "Staging smoke test did not pass (the staging host may be behind a bot check). Open the site in a browser to review."
+            fi
+          fi
